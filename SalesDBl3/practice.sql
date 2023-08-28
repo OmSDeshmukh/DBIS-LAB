@@ -30,10 +30,119 @@ FROM Orders
 WHERE Orders.ORD_DATE LIKE 2008-03%
 
 --Q10
-SELECT ORD_AMOUNT*.10 as amount, *
-FROM Orders;
+SELECT ORD_AMOUNT*1.11 AS amount
+FROM orders;
 
 --Q11
 SELECT ORD_AMOUNT,(ORD_AMOUNT-ADVANCE_AMOUNT) as Balance
 FROM Orders
 WHERE ORD_AMOUNT > 2000 and ORD_AMOUNT < 4000;
+
+--Q12
+SELECT Orders.CUST_CODE, Orders.ORD_NUM, Orders.ORD_AMOUNT
+FROM Customer, Orders
+WHERE Orders.ORD_AMOUNT IN (SELECT Orders.ORD_AMOUNT FROM Orders WHERE Orders.CUST_CODE = 'C00022');
+
+--Q13
+SELECT Agents.AGENT_NAME, Agents.AGENT_CODE
+FROM Agents
+WHERE Agents.COMMISSION > (SELECT max(Agents.COMMISSION) FROM Agents WHERE Agents.WORKING_AREA = 'Bangalore');
+
+--Q14
+SELECT Agents.AGENT_NAME, Agents.AGENT_CODE
+FROM Agents
+WHERE Agents.COMMISSION > (SELECT min(Agents.COMMISSION) FROM Agents WHERE Agents.WORKING_AREA = 'Bangalore');
+
+--Q15
+SELECT  Agents.AGENT_CODE 
+FROM Agents
+WHERE AGENT_CODE IN (SELECT Orders.AGENT_CODE FROM Orders); 
+
+--Q16
+SELECT Customer.CUST_CODE
+FROM Customer
+WHERE Customer.CUST_CODE NOT IN (SELECT Orders.CUST_CODE FROM Orders);
+
+--Q17
+SELECT Agents.AGENT_CODE 
+FROM Agents, Orders
+WHERE Agents.AGENT_CODE = Orders.AGENT_CODE AND Orders.ORD_AMOUNT > 800;
+
+--Q18
+SELECT DISTINCT Agents.AGENT_NAME 
+FROM Agents, Orders
+WHERE Agents.AGENT_CODE = Orders.AGENT_CODE AND Orders.ORD_AMOUNT > 800;
+
+--Q19
+SELECT Customer.CUST_NAME, Customer.CUST_CODE
+FROM Customer 
+WHERE Customer.CUST_CITY IN ( 'Paris', 'New York', 'Bangalore');
+
+--Q20
+SELECT Agents.AGENT_CODE
+FROM Agents, Orders
+WHERE Agents.AGENT_CODE = Orders.AGENT_CODE AND Orders.ORD_AMOUNT = 1000;
+
+--Q21
+SELECT sum(ORD_AMOUNT), avg(ORD_AMOUNT), min(ORD_AMOUNT), max(ORD_AMOUNT)
+FROM Orders;
+
+--Q22
+SELECT count(CUST_CODE)
+FROM Customer
+WHERE CUST_CITY = 'New York';
+
+--Q23
+WITH N(amounts) AS (SELECT ORD_AMOUNT
+    FROM Orders
+    GROUP BY ORD_AMOUNT)
+SELECT count(amounts)
+FROM N;
+
+--Q24
+WITH C(code, ct) AS (SELECT AGENT_CODE, count(AGENT_CODE)
+    FROM Orders
+    GROUP BY Orders.AGENT_CODE)
+SELECT Agents.AGENT_NAME, Agents.AGENT_CODE
+FROM Agents, C
+WHERE Agents.AGENT_CODE = C.code AND C.ct >= 2;
+
+--Q25
+SELECT Agents.WORKING_AREA, count(Agents.AGENT_CODE)
+FROM Agents
+GROUP BY Agents.WORKING_AREA;
+
+--Q26
+WITH C(wa,ct) AS (
+    SELECT Customer.WORKING_AREA, count(Customer.WORKING_AREA)
+    FROM Customer, Orders
+    WHERE Customer.CUST_CODE = Orders.CUST_CODE
+    GROUP BY Customer.WORKING_AREA)
+SELECT Agents.AGENT_NAME
+FROM Agents, C
+WHERE Agents.WORKING_AREA = C.wa AND C.ct >= 2;
+
+--Q27
+SELECT avg(Orders.ORD_AMOUNT)
+FROM Orders, Agents
+WHERE Orders.AGENT_CODE = Agents.AGENT_CODE
+GROUP BY Agents.AGENT_CODE;
+
+--Q28
+DELETE 
+FROM Agents
+WHERE Agents.WORKING_AREA = 'Bangalore';
+
+--Q29
+ALTER TABLE Customer  
+ADD COLUMN Address VARCHAR(50) SET DEFAULT NULL;
+
+--Q30
+ALTER TABLE Agents
+DROP COLUMN COUNTRY;
+
+--Q31
+DELETE FROM Orders;
+
+--Q32
+DROP TABLE Customer;
