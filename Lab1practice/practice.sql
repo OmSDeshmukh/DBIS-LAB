@@ -14,53 +14,76 @@ FROM course, enroll, student
 WHERE student.sid = enroll.sid AND enroll.cno = course.cno AND  enroll.dname= course.dname AND  course.dname='Computer Sciences'
 GROUP BY course.cno;
 
---Q4 no
-SELECT student.sid, student.sname, count(enroll.sid) 
-FROM student, enroll
-WHERE student.sid = enroll.sid 
-GROUP BY enroll.sid,student.sid
-ORDER BY count(enroll.sid) DESC;
+--Q4
+WITH T(sid,sname,ce) AS
+    (SELECT student.sid, student.sname, count(enroll.sid) 
+    FROM student, enroll
+    WHERE student.sid = enroll.sid 
+    GROUP BY enroll.sid,student.sid) 
+SELECT student.sid, student.sname, T.ce AS number_of_courses_enrolled
+FROM student, T
+WHERE student.sid = T.sid AND T.ce =(SELECT max(T.ce) FROM T);
 
---Q5 no
-SELECT department.dname, count(professor.pname)
-FROM department, professor
-WHERE department.dname = professor.dname
-GROUP BY  professor.pname,department.dname;
+
+--Q5
+WITH T(dname, count_of_prof) AS 
+    (SELECT department.dname, count(professor.pname)
+    FROM department, professor
+    WHERE department.dname = professor.dname
+    GROUP BY  department.dname)
+SELECT T.dname
+FROM T
+WHERE T.count_of_prof=(SELECT max(T.count_of_prof) FROM T);
 
 --Q6 
 SELECT student.sname, major.dname
-FROM student, course, major
-WHERE student.sid = major.sid AND major.dname= course.dname AND course.cname = 'Thermodynamics';
+FROM student, major, enroll
+WHERE student.sid = major.sid AND student.sid = enroll.sid AND enroll.cno = (SELECT course.cno FROM course WHERE course.cname='Thermodynamics');
 
---Q7 no
-SELECT course.dname
-FROM major, course,  student, enroll
-WHERE course.dname = major.dname AND student.sid=enroll.sid AND enroll.cno = course.cno AND enroll.dname = course.dname AND enroll.cno = (SELECT course.cno FROM )
-GROUP BY course.dname;
+
+--Q7
+SELECT department.dname 
+FROM department 
+WHERE department.dname NOT IN(SELECT DISTINCT major.dname
+FROM student, major, enroll
+WHERE student.sid = major.sid AND student.sid = enroll.sid AND enroll.cno = (SELECT course.cno FROM course WHERE course.cname='Compiler Construction')
+);
+
 
 --Q8 no
-SELECT student.sname, course.cname
-FROM student, enroll, course 
-WHERE student.sid = enroll.sid AND course.cno = enroll.cno AND enroll.dname = course.dname AND 
+(SELECT student.sname 
+FROM student, enroll
+WHERE student.sid = enroll.sid AND enroll.dname = 'Civil Engineering')
+INTERSECT
+(WITH T(sid, no_of_mcourses_enrolled) AS 
+(SELECT student.sid , count(enroll.cno)
+FROM student, enroll
+WHERE student.sid = enroll.sid AND enroll.dname = 'Mathematics'
+GROUP BY student.sid) 
+SELECT student.sname
+FROM student, T
+WHERE student.sid = T.sid AND T.no_of_mcourses_enrolled < 3);
+
 
 --Q9
 SELECT avg(student.gpa), department.dname
 FROM student, department, major 
-WHERE student.sid = major.sid AND department.dname = major.dname AND department.dname IN (SELECT department.dname
-FROM student, department, major
-WHERE student.sid = major.sid AND department.dname = major.dname AND student.gpa<1.5
-GROUP BY department.dname)
+WHERE student.sid = major.sid AND department.dname = major.dname AND department.dname IN (
+    SELECT department.dname
+    FROM student, department, major
+    WHERE student.sid = major.sid AND department.dname = major.dname AND student.gpa<1.5
+    GROUP BY department.dname)
 GROUP BY department.dname;
 
 --Q10
-SELECT student.sid, student.sname, student.gpa, course.cname
-FROM student, enroll, course
-WHERE student.sid = enroll.sid AND enroll.cno=course.cno AND course.dname= enroll.dname AND course.dname = 'Civil Engineering'
-GROUP BY student.sid
-
-SELECT  count(course.cname)
-FROM student, enroll, course
-WHERE student.sid = enroll.sid AND enroll.cno=course.cno AND course.dname= enroll.dname AND course.dname = 'Civil Engineering'
-GROUP BY student.sid;
-
+WITH T(sid, no_of_cecourses_enrolled) AS 
+(SELECT student.sid , count(enroll.cno)
+FROM student, enroll
+WHERE student.sid = enroll.sid AND enroll.dname = 'Civil Engineering'
+GROUP BY student.sid) 
+SELECT student.sname
+FROM student, T
+WHERE student.sid = T.sid AND T.no_of_cecourses_enrolled = (SELECT count(course.cno)
+    FROM course
+    WHERE course.dname = 'Civil Engineering');
 
