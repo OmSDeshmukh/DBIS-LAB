@@ -1,7 +1,7 @@
 --Q1
 SELECT professor.pname 
 FROM professor, department
-WHERE professor.dname = department.dname and department.numphds>50;
+WHERE professor.dname = department.dname and department.numphds<50;
 
 --Q2
 SELECT student.sname
@@ -20,7 +20,7 @@ WITH T(sid,sname,ce) AS
     FROM student, enroll
     WHERE student.sid = enroll.sid 
     GROUP BY enroll.sid,student.sid) 
-SELECT student.sid, student.sname, T.ce AS number_of_courses_enrolled
+SELECT student.sid, student.sname
 FROM student, T
 WHERE student.sid = T.sid AND T.ce =(SELECT max(T.ce) FROM T);
 
@@ -37,8 +37,8 @@ WHERE T.count_of_prof=(SELECT max(T.count_of_prof) FROM T);
 
 --Q6 
 SELECT student.sname, major.dname
-FROM student, major, enroll
-WHERE student.sid = major.sid AND student.sid = enroll.sid AND enroll.cno = (SELECT course.cno FROM course WHERE course.cname='Thermodynamics');
+FROM student, major, enroll, course
+WHERE student.sid = major.sid AND student.sid = enroll.sid AND enroll.cno = course.cno AND enroll.dname = course.dname AND course.cname = 'Thermodynamics';
 
 
 --Q7
@@ -50,7 +50,7 @@ WHERE student.sid = major.sid AND student.sid = enroll.sid AND enroll.cno = (SEL
 );
 
 
---Q8 no
+--Q8
 (SELECT student.sname 
 FROM student, enroll
 WHERE student.sid = enroll.sid AND enroll.dname = 'Civil Engineering')
@@ -81,9 +81,8 @@ WITH T(sid, no_of_cecourses_enrolled) AS
 FROM student, enroll
 WHERE student.sid = enroll.sid AND enroll.dname = 'Civil Engineering'
 GROUP BY student.sid) 
-SELECT student.sname
+SELECT student.sname, student.gpa
 FROM student, T
 WHERE student.sid = T.sid AND T.no_of_cecourses_enrolled = (SELECT count(course.cno)
     FROM course
     WHERE course.dname = 'Civil Engineering');
-
