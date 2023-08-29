@@ -217,10 +217,14 @@ FROM Agents, C
 WHERE Agents.WORKING_AREA = C.wa AND C.ct >= 2;
 
 --Q27
-SELECT avg(Orders.ORD_AMOUNT)
+WITH T(code, avg_amount) AS 
+(SELECT Agents.AGENT_CODE, avg(Orders.ORD_AMOUNT)
 FROM Orders, Agents
 WHERE Orders.AGENT_CODE = Agents.AGENT_CODE
-GROUP BY Agents.AGENT_CODE;
+GROUP BY Agents.AGENT_CODE)
+SELECT T.avg_amount
+FROM Agents LEFT OUTER JOIN T ON T.code = Agents.AGENT_CODE;
+
 
 --Q28
 DELETE 
