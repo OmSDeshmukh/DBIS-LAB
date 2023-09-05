@@ -134,8 +134,6 @@ INSERT INTO  Grade_mapping VALUES('D',4);
 INSERT INTO  Grade_mapping VALUES('D+',4);
 INSERT INTO  Grade_mapping VALUES('D-',4);
 INSERT INTO  Grade_mapping VALUES('F',0);
-INSERT INTO  Grade_mapping VALUES('F+',0);
-INSERT INTO  Grade_mapping VALUES('F-',0);
 
 
 --Q12
