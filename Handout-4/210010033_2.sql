@@ -19,26 +19,33 @@ WHERE T.number_of_enrolled = (SELECT max(number_of_enrolled) FROM T);
 
 --Q3
 --a
-(SELECT sec_id, count(sec_id),course_id, semester, year
+WITH T(sec_id , number_of_enrolled , course_id , semester , year ) AS
+((SELECT sec_id, count(sec_id),course_id, semester, year
 FROM takes
 GROUP BY sec_id,course_id, semester, year)
 UNION
 (SELECT sec_id, 0, course_id, semester, year
 FROM section
 WHERE (section.sec_id, section.course_id, section.semester, section.year) NOT IN 
-(SELECT takes.sec_id, takes.course_id, takes.semester, takes.year FROM takes));
+(SELECT takes.sec_id, takes.course_id, takes.semester, takes.year FROM takes)))
+SELECT min(number_of_enrolled), max(number_of_enrolled)
+FROM T;
+
 
 --b
-SELECT section.sec_id, count(takes.sec_id), section.course_id, section.semester, section.year
+WITH T(sec_id , number_of_enrolled , course_id , semester , year ) AS
+(SELECT section.sec_id, count(takes.sec_id), section.course_id, section.semester, section.year
 FROM section NATURAL LEFT OUTER JOIN takes
-GROUP BY section.sec_id, section.course_id, section.semester, section.year;
+GROUP BY section.sec_id, section.course_id, section.semester, section.year)
+SELECT min(number_of_enrolled), max(number_of_enrolled)
+FROM T;
+
 
 
 --Q4
 SELECT * 
 FROM course
 WHERE course.course_id LIKE 'CS-1%';
-
 
 --Q5 
 --part A
@@ -69,7 +76,7 @@ WHERE instructor.ID = T.ID AND T.num =(SELECT count(course_id) FROM C);
 
 
 
---Q6 NO
+--Q6
 INSERT INTO student (SELECT ID, name, dept_name, 0 FROM instructor);
 -- ERROR:  duplicate key value violates unique constraint "student_pkey"
 -- DETAIL:  Key (id)=(76543) already exists.
@@ -137,10 +144,15 @@ INSERT INTO  Grade_mapping VALUES('F',0);
 
 
 --Q12
-SELECT student.ID, avg(Grade_mapping.points)
-FROM student, takes, Grade_mapping
-WHERE student.ID = takes.ID AND takes.grade = Grade_mapping.grade
-GROUP BY student.ID;
+WITH T(id ,  cumulative ,  total_credits ) AS
+(SELECT id , sum(multi) AS cumulative , sum(credit) AS total_credits 
+        FROM (SELECT takes.ID AS id, (grade_mapping.points * course.credits) AS multi, course.credits AS credit
+                FROM grade_mapping, takes, course 
+                WHERE takes.grade=grade_mapping.grade AND course.course_id=takes.course_id)
+                AS multi_table 
+        GROUP BY id)
+SELECT id, (cumulative/total_credits) AS cgpa 
+FROM T ;
 
 
 --Q13 
