@@ -1,0 +1,188 @@
+
+EXERCISE :
+1.
+match (q:Person)-[r:REVIEWED]-> (n:Movie)<-[:DIRECTED]-(p:Person)  
+return n.title,collect(p.name), collect(r.rating) 
+
+2.
+MATCH (q:Person)
+OPTIONAL MATCH (q)-[:DIRECTED]->(m:Movie)
+RETURN  q.name, COLLECT(m.title)
+
+
+3.
+match (a:Person {name:"Tom Hanks"})-[:ACTED_IN]->(m:Movie)<-[:ACTED_IN]-(p:Person)
+return m.title,p.name
+
+4.
+match (a:Person {name:"Tom Hanks"})-[:ACTED_IN]->(m:Movie)<-[:ACTED_IN]-(p:Person)
+return collect (m.title),p.name
+
+5.
+match (a:Person)-[:ACTED_IN]->(m:Movie)<-[:ACTED_IN]-(p:Person)
+return collect (m.title),[p.name,a.name]
+
+6.
+match (a:Person)-[:ACTED_IN]->(m:Movie)<-[:ACTED_IN]-(p:Person)
+where a.name<p.name
+return collect(m.title),  [ p.name,a.name]
+
+
+7.
+match (a:Person) 
+where a.born is not null
+set a.Age  = 2023-a.born
+
+8.
+MATCH (a:Person)
+OPTIONAL MATCH (a)-[:ACTED_IN]->(m:Movie)
+WITH a, COLLECT(m.title) AS movies
+SET a.Num_movies_acted = SIZE(movies)
+
+
+9.
+MATCH (a:Person)
+optional match (a:Person)-[:REVIEWED]->(m:Movie)
+return a.name ,collect(m.title)
+
+10.
+
+MATCH  (a:Person)-[:DIRECTED]->(m:Movie)<-[:ACTED_IN]-(p:Person)
+with  collect(Distinct a.name) as A ,m.title as T, collect(Distinct p.name) as L
+return T,size(A) as `Num of Directors`,size(L) as `No of Actors`
+
+
+
+********************************    
+
+1.MATCH (m:Movie)
+WHERE m.released < 2010
+SET m:OlderMovie
+RETURN DISTINCT labels(m)
+
+2.CREATE (:Movie {title: 'Forrest Gump'})
+
+3.MATCH (m:Movie)
+WHERE m.title = 'Forrest Gump'
+SET m.released = 1994,
+    m.tagline = "Life is like a box of chocolates...you never know what you're gonna get.",
+    m.lengthInMinutes = 142
+
+4.MATCH (m:Movie)
+WHERE m.title = 'Forrest Gump'
+SET m.lengthInMinutes = null
+
+
+5.
+MATCH (m:Movie)
+WHERE m.title = 'Forrest Gump'
+MATCH (p:Person)
+WHERE p.name = 'Tom Hanks' OR p.name = 'Robin Wright' OR p.name = 'Gary Sinise'
+CREATE (p)-[:ACTED_IN]->(m)
+
+6.
+MATCH (p1:Person)
+WHERE p1.name = 'Tom Hanks'
+MATCH (p2:Person)
+WHERE p2.name = 'Gary Sinise'
+CREATE (p1)-[:HELPED]->(p2)
+
+7.
+MATCH (p1:Person)-[rel:HELPED]->(p2:Person)
+WHERE p1.name = 'Tom Hanks' AND p2.name = 'Gary Sinise'
+SET rel.research = 'war history'
+
+8.
+MATCH (p1:Person)-[rel:HELPED]->(p2:Person)
+WHERE p1.name = 'Tom Hanks' AND p2.name = 'Gary Sinise'
+REMOVE rel.research
+
+9.
+MATCH (:Person)-[rel:HELPED]-(:Person)
+DELETE rel
+
+10.
+MATCH (p:Person)-[rel]-(m:Movie)
+WHERE m.title = 'Forrest Gump'
+Delete m
+// Gives error
+
+11.
+MATCH (m:Movie)
+WHERE m.title = 'Forrest Gump'
+DETACH DELETE m
+
+12.
+MATCH (p:NewMovie)
+Remove p:NewMovie
+MATCH (p:OlderMovie)
+Remove p:OlderMovie
+
+
+
+Constrainsts and Keys
+
+1. CREATE CONSTRAINT book_iPersonNameUniqueConstraint 
+FOR (p:Person) REQUIRE p.name IS UNIQUE
+
+2.
+CREATE (:Person {name: 'Tom Hanks'})
+
+3.
+CREATE CONSTRAINT PersonBornExistsConstraint For (p:Person) require  p.born
+is not null
+//error
+
+
+
+4.
+match (p:Person) where p.born is  null 
+set p.born = 0
+
+CREATE CONSTRAINT PersonBornExistsConstraint For (p:Person) require  p.born
+is not null
+
+5.
+CREATE (:Person {name: 'Amaaa Hanks'})
+//error
+
+6.CREATE CONSTRAINT ActedInRolesExistConstraint for  ()-[r:ACTED_IN]-() require  r.roles is not null 
+
+7.MATCH (p:Person), (m:Movie)
+WHERE p.name = 'Emil Eifrem' AND
+      m.title = 'Forrest Gump'
+MERGE (p)-[:ACTED_IN]->(m)
+
+
+8.
+CREATE CONSTRAINT titleuniqcon For (m:Movie) require  m.title
+is unique
+
+
+9.
+drop CONSTRAINT titleuniqcon 
+
+10.
+CREATE CONSTRAINT titleuniqcon For (m:Movie) require  (m.title,m.released)
+is node key
+
+11.
+SHOW CONSTRAINTS
+
+12.
+drop constraint ActedInRolesExistConstraint
+
+
+DATA 
+CREATE DATABASE importcsv
+
+:use importcsv
+LOAD CSV WITH HEADERS FROM 'http://data.neo4j.com/intro-neo4j/actors.csv' AS row
+CREATE (:Person {name: row.name, born: toInteger(row.born)})
+LOAD CSV WITH HEADERS
+FROM 'http://data.neo4j.com/intro-neo4j/actors.csv'
+AS line
+MERGE (actor:Person {name: line.name})
+  ON CREATE SET actor.born = toInteger(trim(line.birthYear)), actor.actorId = line.id
+  ON MATCH SET actor.actorId = line.id
+

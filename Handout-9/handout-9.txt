@@ -1,0 +1,328 @@
+sarth@sarth-Inspiron-15-5518 ~> redis-cli
+127.0.0.1:6379> hello
+(error) ERR wrong number of arguments for 'hello' command
+127.0.0.1:6379> set client1 Alice
+OK
+127.0.0.1:6379> get client1
+"Alice"
+127.0.0.1:6379> get client
+(nil)
+127.0.0.1:6379> del client1
+(integer) 1
+127.0.0.1:6379> del client
+(integer) 0
+127.0.0.1:6379> get client:1:level 1
+(error) ERR wrong number of arguments for 'get' command
+127.0.0.1:6379> get client:1:level
+(nil)
+127.0.0.1:6379> set client1 Alice
+OK
+127.0.0.1:6379> get client1:1:level
+(nil)
+127.0.0.1:6379> get client:1:level
+(nil)
+127.0.0.1:6379> del client1
+(integer) 1
+127.0.0.1:6379> set client:1:name Alice
+OK
+127.0.0.1:6379> get client:1:level
+(nil)
+127.0.0.1:6379> get client:1:level 1
+(error) ERR wrong number of arguments for 'get' command
+127.0.0.1:6379> get client:1:level
+(nil)
+127.0.0.1:6379> set client:1:level 1 
+OK
+127.0.0.1:6379> get client:1:level
+"1"
+127.0.0.1:6379> get client:1:name
+"Alice"
+127.0.0.1:6379> incr client:1:level
+(integer) 2
+127.0.0.1:6379> incr client:1:name
+(error) ERR value is not an integer or out of range
+127.0.0.1:6379> incr client:1
+(integer) 1
+127.0.0.1:6379> get client:1
+"1"
+127.0.0.1:6379> get client:1:name
+"Alice"
+127.0.0.1:6379> get client:1:level
+"2"
+127.0.0.1:6379> dect client:1:level
+(error) ERR unknown command `dect`, with args beginning with: `client:1:level`, 
+127.0.0.1:6379> decr client:1:level
+(integer) 1
+127.0.0.1:6379> exists client:1:name
+(integer) 1
+127.0.0.1:6379> exists client:1:na
+(integer) 0
+127.0.0.1:6379> exists client:1
+(integer) 1
+127.0.0.1:6379> exists client
+(integer) 0
+127.0.0.1:6379> set message "hello world"
+OK
+127.0.0.1:6379> expire message 50
+(integer) 1
+127.0.0.1:6379> get messagw
+(nil)
+127.0.0.1:6379> get message
+"hello world"
+127.0.0.1:6379> ttl message
+(integer) 36
+127.0.0.1:6379> ttl message
+(integer) 30
+127.0.0.1:6379> ttl message
+(integer) 29
+127.0.0.1:6379> ttl message
+(integer) 28
+127.0.0.1:6379> ttl message
+(integer) 28
+127.0.0.1:6379> ttl message
+(integer) 27
+127.0.0.1:6379> ttl message
+(integer) 2
+127.0.0.1:6379> ttl message
+(integer) -2
+127.0.0.1:6379> ttl message
+(integer) -2
+127.0.0.1:6379> get message
+(nil)
+127.0.0.1:6379> ttl client:1:name
+(integer) -1
+127.0.0.1:6379> setex message2 150 "hello universe"
+OK
+127.0.0.1:6379> ttl message2
+(integer) 147
+127.0.0.1:6379> persist message2
+(integer) 1
+127.0.0.1:6379> ttl message2
+(integer) -1
+127.0.0.1:6379> setex om 300 "hello"
+OK
+127.0.0.1:6379> get om
+"hello"
+127.0.0.1:6379> expire om 10
+(integer) 1
+127.0.0.1:6379> ttl om
+(integer) 7
+127.0.0.1:6379> get om
+"hello"
+127.0.0.1:6379> get om
+"hello"
+127.0.0.1:6379> get om
+"hello"
+127.0.0.1:6379> get om
+"hello"
+127.0.0.1:6379> get om
+(nil)
+127.0.0.1:6379> persist om
+(integer) 0
+127.0.0.1:6379> persist client:1:name
+(integer) 0
+127.0.0.1:6379> ttl client:1:name
+(integer) -1
+127.0.0.1:6379> mset server:1:name Apache server:1:port 8000
+OK
+127.0.0.1:6379> mget server:1:name server:1:port
+1) "Apache"
+2) "8000"
+127.0.0.1:6379> append server:1:name " lite"
+(integer) 11
+127.0.0.1:6379> mget server:1:name server:1:port
+1) "Apache lite"
+2) "8000"
+127.0.0.1:6379> rename server:1:name server:1:identity
+OK
+127.0.0.1:6379> mget server:1:name server:1:port
+1) (nil)
+2) "8000"
+127.0.0.1:6379> mget server:1:identity server:1:port
+1) "Apache lite"
+2) "8000"
+127.0.0.1:6379> flushall
+OK
+127.0.0.1:6379> mget server:1:identity server:1:port
+1) (nil)
+2) (nil)
+127.0.0.1:6379> rpush customers alice bob charles
+(integer) 3
+127.0.0.1:6379> lrange
+(error) ERR wrong number of arguments for 'lrange' command
+127.0.0.1:6379> lrange customers
+(error) ERR wrong number of arguments for 'lrange' command
+127.0.0.1:6379> lrange customers 0 2
+1) "alice"
+2) "bob"
+3) "charles"
+127.0.0.1:6379> lpush customers om sarth
+(integer) 5
+127.0.0.1:6379> lrange customers 0 4
+1) "sarth"
+2) "om"
+3) "alice"
+4) "bob"
+5) "charles"
+127.0.0.1:6379> rrange customers 0 4
+(error) ERR unknown command `rrange`, with args beginning with: `customers`, `0`, `4`, 
+127.0.0.1:6379> lrange customers 0 -1
+1) "sarth"
+2) "om"
+3) "alice"
+4) "bob"
+5) "charles"
+127.0.0.1:6379> lrange customers 0 -2
+1) "sarth"
+2) "om"
+3) "alice"
+4) "bob"
+127.0.0.1:6379> lrange customers 0 -3
+1) "sarth"
+2) "om"
+3) "alice"
+127.0.0.1:6379> linsert customers after "bob" gade
+(integer) 6
+127.0.0.1:6379> lrange customers 0 -1
+1) "sarth"
+2) "om"
+3) "alice"
+4) "bob"
+5) "gade"
+6) "charles"
+127.0.0.1:6379> linsert customers before "bob" gade
+(integer) 7
+127.0.0.1:6379> lrange customers 0 -1
+1) "sarth"
+2) "om"
+3) "alice"
+4) "gade"
+5) "bob"
+6) "gade"
+7) "charles"
+127.0.0.1:6379> llen customers
+(integer) 7
+127.0.0.1:6379> rpop customers
+"charles"
+127.0.0.1:6379> lrange customers 0 -1
+1) "sarth"
+2) "om"
+3) "alice"
+4) "gade"
+5) "bob"
+6) "gade"
+127.0.0.1:6379> lpop customers
+"sarth"
+127.0.0.1:6379> lrange customers 0 -1
+1) "om"
+2) "alice"
+3) "gade"
+4) "bob"
+5) "gade"
+127.0.0.1:6379> rpop customers
+"gade"
+127.0.0.1:6379> sadd courses CS math physics
+(integer) 3
+127.0.0.1:6379> smembers courses
+1) "physics"
+2) "math"
+3) "CS"
+127.0.0.1:6379> sadd courses math
+(integer) 0
+127.0.0.1:6379> scard courses
+(integer) 3
+127.0.0.1:6379> sismember courses cs
+(integer) 0
+127.0.0.1:6379> sismember courses CS
+(integer) 1
+127.0.0.1:6379> smove courses basic physics
+(integer) 1
+127.0.0.1:6379> smembers courses
+1) "math"
+2) "CS"
+127.0.0.1:6379> smembers physics
+(empty array)
+127.0.0.1:6379> smembers basic
+1) "physics"
+127.0.0.1:6379> flushall
+OK
+127.0.0.1:6379> zadd clients 3500 Harry 3300 Alice 3500 Charles 3400 Robert
+(integer) 4
+127.0.0.1:6379> zmembers clients
+(error) ERR unknown command `zmembers`, with args beginning with: `clients`, 
+127.0.0.1:6379> zrange
+(error) ERR wrong number of arguments for 'zrange' command
+127.0.0.1:6379> zrange clients
+(error) ERR wrong number of arguments for 'zrange' command
+127.0.0.1:6379> zrange clients 0 -1
+1) "Alice"
+2) "Robert"
+3) "Charles"
+4) "Harry"
+127.0.0.1:6379> zadd clients 3600 Charles
+(integer) 0
+127.0.0.1:6379> zrange clients 0 -1
+1) "Alice"
+2) "Robert"
+3) "Harry"
+4) "Charles"
+127.0.0.1:6379> zadd clients 3200 Robert
+(integer) 0
+127.0.0.1:6379> zrange clients 0 -1
+1) "Robert"
+2) "Alice"
+3) "Harry"
+4) "Charles"
+127.0.0.1:6379> zrank clients Alice
+(integer) 1
+127.0.0.1:6379> zrank clients Robert
+(integer) 0
+127.0.0.1:6379> zrank clients Charles
+(integer) 3
+127.0.0.1:6379> zincrby clients 600 Robert
+"3800"
+127.0.0.1:6379> zrange clients 0 -1
+1) "Alice"
+2) "Harry"
+3) "Charles"
+4) "Robert"
+127.0.0.1:6379> flushall
+OK
+127.0.0.1:6379> hset customer:1 name Alice income 3200
+(integer) 2
+127.0.0.1:6379> hget customer:1:name
+(error) ERR wrong number of arguments for 'hget' command
+127.0.0.1:6379> hget customer:1: name
+(nil)
+127.0.0.1:6379> hget customer:1 name
+"Alice"
+127.0.0.1:6379> hgetall customer:
+(empty array)
+127.0.0.1:6379> hgetall customer:1
+1) "name"
+2) "Alice"
+3) "income"
+4) "3200"
+127.0.0.1:6379> hkeys customer:1
+1) "name"
+2) "income"
+127.0.0.1:6379> hvals customer:1
+1) "Alice"
+2) "3200"
+127.0.0.1:6379> hlen customer:!
+(integer) 0
+127.0.0.1:6379> hlen customer:1
+(integer) 2
+127.0.0.1:6379> 
+127.0.0.1:6379> hincrby customer:1 income 2000
+(integer) 5200
+127.0.0.1:6379> hdel customer:1 name
+(integer) 1
+127.0.0.1:6379> hvals customer:1
+1) "5200"
+127.0.0.1:6379> hkeys customer:1
+1) "income"
+127.0.0.1:6379> save
+OK
+127.0.0.1:6379> 
+

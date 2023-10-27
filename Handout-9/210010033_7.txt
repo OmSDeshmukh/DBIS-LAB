@@ -1,0 +1,86 @@
+Insert and Delete
+
+3. set client1 Alice
+
+4. get client2
+    (nil)
+
+6. del client2
+    (integer) 0
+
+7. set client:1:name Alice
+
+8. set client:1:level 1
+
+
+Delete based on time
+
+2. exists client:1:address
+
+3. set Message "Hello world"
+
+6. ttl client1
+    (integer) -1
+
+7. ttl client2
+    (integer) -2
+
+10. persist client1
+    (integer) 0
+
+11. persist client2
+    (integer) 0
+
+
+List
+
+2. lpush customers alice bob charles
+
+4. lrange customers 0 1
+
+6. linsert customers before "bob" Aditya
+
+9. lpop customers
+
+10. flushall
+
+
+Set
+
+2. sadd courses Economics
+
+4. sadd courses Physics
+    (integer) 0
+
+7. sismember courses Chemistry
+
+10. srem courses Chemistry
+    (integer) 0
+
+11. flushall
+
+
+Ordered set
+
+3. zadd clients 3200 Charles
+    (integer) 0
+
+5. zrank clients Dumbledore
+    (nil)
+
+7. zrange clients 0 -1
+
+8. flushall
+
+
+Hash set
+
+3. hget Customer:1 address
+
+4. hget Customer:2 name
+
+6. hgetall Customer:2
+
+9. hkeys Customer:2
+
+10. hvals Customer:2
