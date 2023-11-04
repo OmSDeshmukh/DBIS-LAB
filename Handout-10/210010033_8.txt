@@ -1,0 +1,54 @@
+REDIS
+1.
+SET course:1:title 'Data Management'
+SET course:1:NumberOfStudents 3
+SADD course:1:materials 'Fundamentals of Database Systems' 'No SQL for Mere Mortals'
+
+2.
+ZADD course:1:students 9.1 Alice 8.9 Bob 9.0 Charles
+
+3.
+ZRANGE course:1:students 0 -1
+
+4.
+SCARD course:1:textbooks
+
+5.
+RENAME course:1:textbooks course:1:materials
+
+6.
+SADD course:1:materials 'Slides'
+
+7.
+SET course:1:assignment4 'Redis and MongoDB'
+
+8.
+EXPIRE course:1:handout10 100
+
+9.
+KEYS *
+
+10.
+DEL course:1:NumberOfStudents
+
+
+
+MongoDB
+1.
+show dbs
+
+2.
+use sample_mflix
+show collections
+
+3.
+use sample_airbnb
+db.listingsAndReviews.find({'address.country': 'Australia' }, { _id: 1, name: 1 })
+
+4.
+use sample_airbnb
+db.listingsAndReviews.find({ "bedrooms": { $gte: 2 } }, { _id: 1, name: 1 })
+
+5.
+use sample_airbnb
+db.listingsAndReviews.find({'address.location.is_location_exact':true},{ _id: 1, name: 1, 'address': 1 })
