@@ -1,0 +1,64 @@
+Create and list database
+
+1)show dbs
+2) use CompanyDB
+3)Initially database not shown in cluster since no data present
+
+
+Insert
+2)db.createCollection('Customer'); db.Customer.insertOne({name:'Alice', age:24} );
+3)Now database shown in cluster
+4)show collections
+5)db.Customer.insert([{name:'Bob'},{name:'Charles',age:26,level:1},{name:'Darshan',age:27}])
+
+
+Find
+1)db.Customer.find();
+2)db.Customer.find({ age: 27 })
+3) db.Customer.find({ age: {$gte:25} });
+4)db.Customer.find({ age: {$lt:27} });
+5)db.Customer.find({ age: {$lte:27} });
+6)db.Customer.find({ age: { $lte: 27 } }, { _id: 0, name: 1 });
+7)db.Customer.find({ age: { $lte: 27 } }, { name: 1, age:1 });
+
+
+Nested Documents
+1)db.Customer.insert({name:'Harry', age:25, address:{street: '75, Bd. Saint Germain' ,city:'Paris', country: 'France'}});
+2)db.Customer.find({ 'address.city':'Paris'});
+
+Update
+1)db.Customer.updateOne( { name: "Alice" }, { $set: { age: 29 } } )
+2)Without the $set operator, the above command would completely replace the "Alice" document with a new document { age: 29 }, effectively removing all the other fields (such as "name" and "address") and replacing them with just the "age" field. This is known as a "whole document replacement." This behavior is different from using $set, which allows you to update specific fields while preserving the rest of the document.
+
+Delete
+1)db.Customer.deleteOne({name:'Bob'});
+3)db.Customer.drop()
+4)db.dropDatabase()
+
+
+Exercise
+
+Mongodb
+1)show dbs
+2)use sample_mflix show collections
+3)use sample_airbnb db.listingsAndReviews.find({'address.country':'Australia'},{id:1, name:1});
+4)use sample_airbnb db.listingsAndReviews.find({bedrooms:{$gte:2}},{id:1, name:1});
+5)use sample_airbnb db.listingsAndReviews.find({ 'address.location.is_location_exact': true }, { id: 1, name: 1, address: 1 });
+
+
+
+Redis
+1) mset course:1:title 'Data Management' course:1:NumberOfStudents 3 sadd course:1:textbooks 'Fundamentals of Database Systems Set' 'No SQL for Mere Mortals'
+2)zadd course:1:students 9.1 Alice 8.9 Bob 9.0 Charles
+3)zrange course:1:students 0 3
+4)scard course:1:textbooks
+5)rename course:1:textbooks course:1:materials
+6)sadd course:1:materials slides
+7)sadd course:1:assignment4 Redis MongoDB
+8)expire course:1:handout10 100
+9)keys *
+10)del course:1:assignment4
+
+
+
+
