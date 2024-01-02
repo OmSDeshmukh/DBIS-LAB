@@ -9,13 +9,13 @@ Insert
 2)db.createCollection('Customer'); db.Customer.insertOne({name:'Alice', age:24} );
 3)Now database shown in cluster
 4)show collections
-5)db.Customer.insert([{name:'Bob'},{name:'Charles',age:26,level:1},{name:'Darshan',age:27}])
+5)db.Customer.insertMany([{name:'Bob'},{name:'Charles',age:26,level:1},{name:'Darshan',age:27}])
 
 
 Find
 1)db.Customer.find();
 2)db.Customer.find({ age: 27 })
-3) db.Customer.find({ age: {$gte:25} });
+3)db.Customer.find({ age: {$gte:25} });
 4)db.Customer.find({ age: {$lt:27} });
 5)db.Customer.find({ age: {$lte:27} });
 6)db.Customer.find({ age: { $lte: 27 } }, { _id: 0, name: 1 });
